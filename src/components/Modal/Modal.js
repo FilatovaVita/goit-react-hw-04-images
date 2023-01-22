@@ -33,7 +33,7 @@ export class Modal extends Component {
     return (
       <ModalOverlay onClick={this.onBackdropClick}>
         <ModalField>
-          <img src={src} />
+          <img src={src} alt="" />
         </ModalField>
       </ModalOverlay>
     );
