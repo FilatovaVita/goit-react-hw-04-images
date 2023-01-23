@@ -1,15 +1,14 @@
 import PropTypes from 'prop-types';
 import { GalleryItem, GalleryImage } from './ImageGalleryItem.styled';
 
-export const ImageGalleryItem = ({ id, tags, webformatURL, largeImage }) => {
+export const ImageGalleryItem = ({ tags, webformatURL, largeImage }) => {
   return (
-    <GalleryItem key={id}>
+    <GalleryItem>
       <GalleryImage src={webformatURL} alt={tags} data={largeImage} />
     </GalleryItem>
   );
 };
 ImageGalleryItem.propTypes = {
-  id: PropTypes.number.isRequired,
   webformatURL: PropTypes.string.isRequired,
   tags: PropTypes.string.isRequired,
   largeImage: PropTypes.string.isRequired,

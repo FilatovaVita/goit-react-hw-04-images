@@ -15,12 +15,8 @@ export class App extends Component {
     page: 1,
     isLoading: false,
     error: null,
+    totalImages: null,
   };
-
-  searchQueryFormSubmit = searchQuery => {
-    this.setState({ searchQuery, images: [], page: 1 });
-  };
-
   componentDidUpdate(prevProps, prevState) {
     if (
       prevState.searchQuery !== this.state.searchQuery ||
@@ -30,11 +26,14 @@ export class App extends Component {
     }
     if (this.state.page > 1) {
       window.scrollTo({
-        top: document.documentElement.scrollHeight,
+        top: document.documentElement.scrollHeight - 240,
         behavior: 'smooth',
       });
     }
   }
+  searchQueryFormSubmit = searchQuery => {
+    this.setState({ searchQuery, images: [], page: 1 });
+  };
 
   addImages = async () => {
     try {
@@ -48,12 +47,12 @@ export class App extends Component {
       }
       this.setState(prevState => ({
         images: [...prevState.images, ...image.hits],
+        totalImages: image.totalHits,
       }));
     } catch (error) {
-      this.setState({ error: error.message });
+      this.setState({ error: 'Something wrong! Please reload the page!' });
     } finally {
       this.setState({ isLoading: false });
-      console.log(this.state.isLoading);
     }
   };
 
@@ -64,14 +63,17 @@ export class App extends Component {
   };
 
   render() {
-    const { images, isLoading } = this.state;
+    const { images, isLoading, totalImages, error } = this.state;
     return (
       <Container>
         <Searchbar onSubmit={this.searchQueryFormSubmit} />
         <ToastContainer autoClose={3000} position="top-center" />
         {isLoading && <Loader />}
         <ImageGallery images={images} isLoading={isLoading} />
-        {!images.length ? '' : <Button loadMore={this.loadMore} />}
+        {images.length > 0 && images.length < totalImages && (
+          <Button loadMore={this.loadMore} />
+        )}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
       </Container>
     );
   }

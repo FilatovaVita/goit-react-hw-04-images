@@ -20,17 +20,21 @@ export class ImageGallery extends Component {
   state = {
     clickedImage: '',
     isModalOpen: false,
+    tags: '',
   };
   closeModal = () => this.setState({ clickedImage: '', isModalOpen: false });
+
   onClickImage = event => {
     this.setState({
       clickedImage: event.target.getAttribute('data'),
       isModalOpen: true,
+      tags: event.target.alt,
     });
   };
+
   render() {
     const { images, isLoading } = this.props;
-    const { clickedImage, isModalOpen } = this.state;
+    const { clickedImage, isModalOpen, tags } = this.state;
 
     return (
       <>
@@ -40,7 +44,7 @@ export class ImageGallery extends Component {
               <ImageGalleryItem
                 tags={tags}
                 id={id}
-                key={webformatURL}
+                key={id}
                 webformatURL={webformatURL}
                 largeImage={largeImageURL}
               />
@@ -48,10 +52,8 @@ export class ImageGallery extends Component {
           })}
         </Container>
         {isLoading && <Loader />}
-        {isModalOpen ? (
-          <Modal src={clickedImage} onClose={this.closeModal} />
-        ) : (
-          ''
+        {isModalOpen && (
+          <Modal src={clickedImage} tags={tags} onClose={this.closeModal} />
         )}
       </>
     );

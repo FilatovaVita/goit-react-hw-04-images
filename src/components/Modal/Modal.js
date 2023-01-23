@@ -5,6 +5,7 @@ import { ModalOverlay, ModalField } from './Modal.styled';
 export class Modal extends Component {
   static propTypes = {
     src: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
     onClose: PropTypes.func.isRequired,
   };
   componentDidMount() {
@@ -28,12 +29,12 @@ export class Modal extends Component {
   };
 
   render() {
-    const { src } = this.props;
+    const { src, tags } = this.props;
 
     return (
       <ModalOverlay onClick={this.onBackdropClick}>
         <ModalField>
-          <img src={src} alt="" />
+          <img src={src} alt={tags} />
         </ModalField>
       </ModalOverlay>
     );
