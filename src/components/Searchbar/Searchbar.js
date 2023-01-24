@@ -8,7 +8,7 @@ import {
   FormButton,
   ButtonLable,
 } from './Searchbar.styled';
-import PropTypes, { func } from 'prop-types';
+import PropTypes from 'prop-types';
 
 export class Searchbar extends Component {
   static propType = {
