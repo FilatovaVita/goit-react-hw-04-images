@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useEffect, useState} from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Searchbar } from '../Searchbar/Searchbar';
@@ -8,73 +8,66 @@ import { Button } from '../Button/Button';
 import { Loader } from '../Loader/Loader';
 import { Container } from './App.styled';
 
-export class App extends Component {
-  state = {
-    searchQuery: '',
-    images: [],
-    page: 1,
-    isLoading: false,
-    error: null,
-    totalImages: null,
-  };
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      prevState.searchQuery !== this.state.searchQuery ||
-      prevState.page !== this.state.page
-    ) {
-      this.addImages();
-    }
-    if (this.state.page > 1) {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight - 240,
-        behavior: 'smooth',
-      });
-    }
-  }
-  searchQueryFormSubmit = searchQuery => {
-    this.setState({ searchQuery, images: [], page: 1 });
+export const App =()=> {
+  const [searchQuery,setSearchQuery ] = useState('');
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [totalImages, setTotalImages] = useState(null);
+
+
+  const searchQueryFormSubmit = searchQuery => {
+    setPage(1);
+    setImages([]);
+    setSearchQuery(searchQuery);
   };
 
-  addImages = async () => {
+
+useEffect(()=> {
+  const addImages = async (searchQuery, page) => {
+    if (searchQuery === '') {
+      return;
+    }
     try {
-      this.setState({ isLoading: true });
-      const { searchQuery, page } = this.state;
+      setIsLoading(true);
       const image = await fetchPhoto(searchQuery, page);
       if (image.totalHits === 0) {
         toast.error('Images not found ...');
-        this.setState({ isLoading: false });
+        setIsLoading(false);
         return;
       }
-      this.setState(prevState => ({
-        images: [...prevState.images, ...image.hits],
-        totalImages: image.totalHits,
-      }));
+      setImages(prevImages => [...prevImages, ...image.hits]);
+      setTotalImages(image.totalHits);
+
     } catch (error) {
-      this.setState({ error: 'Something wrong! Please reload the page!' });
+      setError('Something wrong! Please reload the page!');
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
+  }
+  addImages(searchQuery,page);
+}, [searchQuery,page]);
+
+ const loadMore = () => {
+   setPage(prevPage => (
+     prevPage + 1
+    ));
   };
 
-  loadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
-  };
-
-  render() {
-    const { images, isLoading, totalImages, error } = this.state;
-    return (
+ return (
       <Container>
-        <Searchbar onSubmit={this.searchQueryFormSubmit} />
+        <Searchbar onSubmit={searchQueryFormSubmit} />
         <ToastContainer autoClose={3000} position="top-center" />
         {isLoading && <Loader />}
         <ImageGallery images={images} isLoading={isLoading} />
         {images.length > 0 && images.length < totalImages && (
-          <Button loadMore={this.loadMore} />
+          <Button loadMore={loadMore} />
         )}
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </Container>
     );
-  }
 }
+
+
+

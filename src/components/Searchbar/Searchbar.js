@@ -1,5 +1,6 @@
-import { Component } from 'react';
+import { useState} from 'react';
 import { ReactComponent as SearchIcon } from 'image/icons8-search.svg';
+import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import {
   Container,
@@ -8,31 +9,28 @@ import {
   FormButton,
   ButtonLable,
 } from './Searchbar.styled';
-import PropTypes from 'prop-types';
 
-export class Searchbar extends Component {
-  static propType = {
-    onSubmit: PropTypes.func.isRequired,
+
+export const Searchbar =({onSubmit})=> {
+  const [searchQuery, setSearchQuery] = useState('');
+
+const  formatSearchQuery = event => {
+  setSearchQuery(event.currentTarget.value.toLowerCase());
   };
-  state = {
-    searchQuery: '',
-  };
-  formatSearchQuery = event => {
-    this.setState({ searchQuery: event.currentTarget.value.toLowerCase() });
-  };
-  onSearchQuerySubmit = event => {
+ const onSearchQuerySubmit = event => {
     event.preventDefault();
-    if (!this.state.searchQuery.trim()) {
+    if (!searchQuery.trim()) {
       toast.error('Please enter search name!');
       return;
     }
-    this.props.onSubmit(this.state.searchQuery);
-    this.setState({ searchQuery: '' });
+    onSubmit(searchQuery);
+   setSearchQuery( '' );
+
   };
-  render() {
+
     return (
       <Container>
-        <Form onSubmit={this.onSearchQuerySubmit}>
+        <Form onSubmit={onSearchQuerySubmit}>
           <FormButton type="submit">
             <SearchIcon />
             <ButtonLable>Search</ButtonLable>
@@ -42,12 +40,16 @@ export class Searchbar extends Component {
             type="text"
             autoComplete="off"
             autoFocus
-            value={this.state.searchQuery}
-            onChange={this.formatSearchQuery}
+            value={searchQuery}
+            onChange={formatSearchQuery}
             placeholder="Search images and photos"
           />
         </Form>
       </Container>
     );
   }
-}
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
+
